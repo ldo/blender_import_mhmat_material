@@ -17,7 +17,7 @@ bl_info = \
     {
         "name" : "Import MakeHuman Material",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 1, 0),
+        "version" : (0, 1, 1),
         "blender" : (2, 82, 0),
         "location" : "File > Import",
         "description" : "imports a material definition from a .mhmat file.",
@@ -51,6 +51,8 @@ def deselect_all(material_tree) :
 
 @enum.unique
 class MAP(enum.Enum) :
+    # each value is a 3-tuple:
+    # («name of input on Principled BSDF», «name of texture map attribute», «name of intensity attribute»)
     ALPHA = ("Alpha", "transparencymapTexture", "transparencymapIntensity")
     BUMP = ("Normal", "bumpmapTexture", "bumpmapIntensity")
     DIFFUSE = ("Base Color", "diffuseTexture", None)
@@ -129,6 +131,9 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
             def load_image(words) :
                 pathname = os.path.join(os.path.dirname(self.filepath), words[0])
                 image = bpy.data.images.load(pathname)
+                if not is_colour :
+                    image.colorspace_settings.name = "Non-Color"
+                #end if
                 image.pack()
                 image.name = os.path.split(pathname)[1]
                 # wipe all traces of original source file path
