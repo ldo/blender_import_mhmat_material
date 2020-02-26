@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+#+
+# This script validates a .mhmat file. Currently this just means
+# verifying that referenced image textures actually exist.
+#
+# Copyright 2020 by Lawrence D'Oliveiro <ldo@geek-central.gen.nz>.
+# Licensed under CC-BY-SA <http://creativecommons.org/licenses/by-sa/4.0/>.
+#-
+
+import sys
+import os
+import getopt
+
+image_keywords = \
+    {
+        "diffuseTexture",
+        "bumpmapTexture",
+        "normalmapTexture",
+        "displacementmapTexture",
+        "specularmapTexture",
+        "transparencymapTexture",
+    }
+
+#+
+# Mainline
+#-
+
+exit_status = 0
+opts, args = getopt.getopt \
+  (
+    sys.argv[1:],
+    "",
+    []
+  )
+for filename in args :
+    linenr = 0
+    for line in open(filename, "rt") :
+        linenr += 1
+        line = line.strip()
+        if not (line == "" or line.startswith("#") or line.startswith("//")) :
+            items = list(i for i in line.split() if i != "")
+            keyword = items[0]
+            rest = items[1:]
+            if keyword in image_keywords :
+                sys.stderr.write("file %s, line %d, %s " % (filename, linenr, keyword))
+                if os.path.isfile(os.path.join(os.path.dirname(filename), rest[0])) :
+                    sys.stderr.write("present")
+                else :
+                    sys.stderr.write("MISSING")
+                    exit_status = 3
+                #end if
+                sys.stderr.write(": %s" % rest[0])
+                sys.stderr.write("\n")
+            #end if
+        #end if
+    #end for
+#end for
+sys.exit(exit_status)
