@@ -9,6 +9,7 @@
 
 import sys
 import os
+import shlex
 import getopt
 
 image_keywords = \
@@ -42,7 +43,7 @@ for filename in args :
             keyword = items[0]
             rest = items[1:]
             if keyword in image_keywords :
-                sys.stderr.write("file %s, line %d, %s " % (filename, linenr, keyword))
+                sys.stderr.write("file %s, line %d, %s " % (shlex.quote(filename), linenr, keyword))
                 if os.path.isfile(os.path.join(os.path.dirname(filename), rest[0])) :
                     sys.stderr.write("present")
                 else :
