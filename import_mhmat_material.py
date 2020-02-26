@@ -17,7 +17,7 @@ bl_info = \
     {
         "name" : "Import MakeHuman Material",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 1, 1),
+        "version" : (0, 2, 0),
         "blender" : (2, 82, 0),
         "location" : "File > Import",
         "description" : "imports a material definition from a .mhmat file.",
@@ -371,10 +371,36 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
                     tex_image
             #end new_image_texture_node
 
+            def add_intensity_nodes(map, input_terminal, extra_nodes_location) :
+                output_terminal = input_terminal
+                if map.intensity_name != None :
+                    intensity = getattr(settings, map.intensity_name)
+                    if intensity != 1 :
+                        intensify = material_tree.nodes.new("ShaderNodeMath")
+                        intensify.location = extra_nodes_location
+                        intensify.operation = "MULTIPLY"
+                        intensify.inputs[0].default_value = 1
+                        intensify.inputs[1].default_value = intensity
+                        material_tree.links.new \
+                          (
+                            input_terminal,
+                            intensify.inputs[0]
+                          )
+                        output_terminal = intensify.outputs[0]
+                    #end if
+                #end if
+                return \
+                    output_terminal
+            #end add_intensity_nodes
+
             def add_bump_convert_nodes(texture_output, extra_nodes_location) :
                 # adds a node for converting a bump map to a normal map.
                 bump_convert = material_tree.nodes.new("ShaderNodeBump")
                 bump_convert.location = extra_nodes_location
+                intensity = settings.bumpmapIntensity
+                if intensity != 1 :
+                    bump_convert.inputs["Strength"].default_value = intensity
+                #end if
                 material_tree.links.new \
                   (
                     texture_output,
@@ -388,6 +414,10 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
                 # adds a node for correctly applying the normal map.
                 map = material_tree.nodes.new("ShaderNodeNormalMap")
                 map.location = extra_nodes_location
+                intensity = settings.normalmapIntensity
+                if intensity != 1 :
+                    map.inputs["Strength"].default_value = intensity
+                #end if
                 material_tree.links.new \
                   (
                     texture_output,
@@ -412,15 +442,24 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
                     extra_nodes_location[0] += 300
                     tex_image = new_image_texture_node(map)
                     if map == MAP.ALPHA or map == MAP.DIFFUSE and tex_image.image.channels > 3 :
+                        # pointless check: tex_image.image.channels returns 4 even when
+                        # loading RGB (not RGBA) PNG image
                         got_transparency = True
                         if map == MAP.DIFFUSE :
                             diffuse_map_node = tex_image
                         #end if
                     #end if
-                    output_terminal = tex_image.outputs["Color"]
                     add_special_nodes = add_special_nodes_for.get(map)
+                    output_terminal = tex_image.outputs["Color"]
                     if add_special_nodes != None :
                         output_terminal = add_special_nodes(output_terminal, extra_nodes_location)
+                    else :
+                        output_terminal = add_intensity_nodes \
+                            (
+                                map,
+                                output_terminal,
+                                extra_nodes_location
+                            )
                     #end if
                     material_tree.links.new \
                       (
@@ -447,9 +486,16 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
                 if tex_image.image.channels > 3 :
                     got_transparency = True
                 #end if
+                extra_nodes_location = list(map_location)
+                extra_nodes_location[0] += 300
                 material_tree.links.new \
                   (
-                    tex_image.outputs["Color"],
+                    add_intensity_nodes
+                      (
+                        MAP.DISPLACEMENT,
+                        tex_image.outputs["Color"],
+                        extra_nodes_location
+                      ),
                     material_output.inputs["Displacement"]
                   )
                 material.cycles.displacement_method = "BOTH"
