@@ -273,7 +273,7 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
             }
 
         class Settings :
-            pass
+            __slots__ = ("name",) + tuple(valid_keywords.keys())
         #end Settings
 
     #begin execute
