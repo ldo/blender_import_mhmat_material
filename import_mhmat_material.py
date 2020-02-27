@@ -359,7 +359,7 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
             main_shader.inputs["Subsurface Radius"].default_value = \
                 tuple(getattr(settings, "sss%sScale" % c) for c in ("R", "G", "B"))
             main_shader.inputs["Roughness"].default_value = 1.0 - settings.shininess
-            map_location = [-100, 200]
+            map_location = [-100, 0]
 
             def new_image_texture_node(map) :
                 tex_image = material_tree.nodes.new("ShaderNodeTexImage")
