@@ -50,7 +50,7 @@ for filename in args :
                     sys.stderr.write("MISSING")
                     exit_status = 3
                 #end if
-                sys.stderr.write(": %s" % rest[0])
+                sys.stderr.write(": %s" % " ".join(rest))
                 sys.stderr.write("\n")
             #end if
         #end if
