@@ -44,7 +44,7 @@ for filename in args :
             rest = items[1:]
             if keyword in image_keywords :
                 sys.stderr.write("file %s, line %d, %s " % (shlex.quote(filename), linenr, keyword))
-                if os.path.isfile(os.path.join(os.path.dirname(filename), rest[0])) :
+                if os.path.isfile(os.path.join(os.path.dirname(filename), " ".join(rest))) :
                     sys.stderr.write("present")
                 else :
                     sys.stderr.write("MISSING")
