@@ -1,0 +1,24 @@
+I wrote these tools to make use of the assets available at
+<http://www.makehumancommunity.org/content/user_contributed_assets.html>.
+These are meant for use in MakeHuman, but then the models are going to
+be exported back to Blender anyway, so I thought there should be a way
+to bring the material definitions directly into Blender. Hence the
+import_mhmat_material addon. There is already a standard importer for
+the .obj files that come with the assets; this one lets you load the
+.mhmat files in a usable form as well.
+
+I also found that several of the material definitions referenced
+texture files under the wrong names. So the validate_mhmat script lets
+you quickly check for these from the command line, rather than waiting
+to hit an error when you try to import them into Blender. You can pass
+it one or more .mhmat files as arguments. To quickly check the entire
+contents of a directory (and any subdirectories recursively), try
+something like
+
+    find «dir» -name \*mhmat -print0 | xargs -0 validate_mhmat
+
+Fixing up the .mhmat files is pretty easy, since they are just
+text files in a fairly obvious keyword-value format.
+
+Lawrence D'Oliveiro <ldo@geek-central.gen.nz>
+2020 March 2
