@@ -17,7 +17,7 @@ bl_info = \
     {
         "name" : "Import MakeHuman Material",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 2, 1),
+        "version" : (0, 2, 2),
         "blender" : (2, 82, 0),
         "location" : "File > Import",
         "description" : "imports a material definition from a .mhmat file.",
@@ -89,12 +89,6 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
     bl_idname = "material.import_mhmat"
     bl_label = "Import MakeHuman Material"
 
-    files : bpy.props.CollectionProperty \
-      (
-        name = "File Path",
-        description = "MakeHuman Material File",
-        type = bpy.types.OperatorFileListElement
-      )
     filter_glob : bpy.props.StringProperty \
       (
         default = "*.mhmat",
