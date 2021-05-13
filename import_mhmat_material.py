@@ -17,7 +17,7 @@ bl_info = \
     {
         "name" : "Import MakeHuman Material",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 2, 2),
+        "version" : (0, 2, 3),
         "blender" : (2, 82, 0),
         "location" : "File > Import",
         "description" : "imports a material definition from a .mhmat file.",
@@ -285,7 +285,7 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
               # don’t use name field from .mhmat file
             linenr = 0
             errors = []
-            for line in open(self.filepath, "rt") :
+            for line in open(self.filepath, "rt", encoding = "utf8") :
                 linenr += 1
                 line = line.strip()
                 if not (line == "" or line.startswith("#") or line.startswith("//")) :
