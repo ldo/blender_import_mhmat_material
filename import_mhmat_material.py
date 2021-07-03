@@ -17,8 +17,8 @@ bl_info = \
     {
         "name" : "Import MakeHuman Material",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 2, 4),
-        "blender" : (2, 93, 0),
+        "version" : (0, 2, 3),
+        "blender" : (2, 82, 0),
         "location" : "File > Import",
         "description" : "imports a material definition from a .mhmat file.",
         "warning" : "",
@@ -126,7 +126,7 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
                 pathname = os.path.join(os.path.dirname(self.filepath), " ".join(words))
                 image = bpy.data.images.load(pathname)
                 if not is_colour :
-                    image.colorspace_settings.name = "Linear"
+                    image.colorspace_settings.name = "Non-Color"
                 #end if
                 image.pack()
                 image.name = os.path.split(pathname)[1]
