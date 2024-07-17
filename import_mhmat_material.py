@@ -17,8 +17,8 @@ bl_info = \
     {
         "name" : "Import MakeHuman Material",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 2, 3),
-        "blender" : (2, 82, 0),
+        "version" : (0, 3, 0),
+        "blender" : (4, 1, 0),
         "location" : "File > Import",
         "description" : "imports a material definition from a .mhmat file.",
         "warning" : "",
@@ -343,13 +343,13 @@ class ImportMakeHumanMaterial(bpy.types.Operator, bpy_extras.io_utils.ImportHelp
             for attr, input in \
                 (
                     ("diffuseColor", "Base Color"),
-                    ("emissiveColor", "Emission"),
+                    ("emissiveColor", "Emission Color"),
                     ("opacity", "Alpha"),
                 ) \
             :
                 main_shader.inputs[input].default_value = getattr(settings, attr)
             #end for
-            main_shader.inputs["Subsurface"].default_value = (0, 1)[settings.sssEnabled]
+            main_shader.inputs["Subsurface Weight"].default_value = (0, 1)[settings.sssEnabled]
             main_shader.inputs["Subsurface Radius"].default_value = \
                 tuple(getattr(settings, "sss%sScale" % c) for c in ("R", "G", "B"))
             main_shader.inputs["Roughness"].default_value = 1.0 - settings.shininess
